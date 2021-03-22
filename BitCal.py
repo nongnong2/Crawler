@@ -1,5 +1,7 @@
 import requests
+import time
 from bs4 import BeautifulSoup
+from selenium import webdriver
 # bitcoin은 가치저장의 수단으로 생각, 금의 지위를 어느정도 대체
 # 단위 kg, 달러
 
@@ -19,10 +21,20 @@ def GetBitInfo():
     bp2 = float(bp1.replace(',',''))
     return(bq2, bp2)
 
-def Cacluate(bit_quantity, bit_price):
+def GetGoldPrice():
+    driver = webdriver.Chrome(r'C:\chromedriver')
+    gold_url = "https://www.bullionvault.com/gold-price-chart.do"
+
+    driver.get(gold_url) 
+    time.sleep(2)
+    gp = driver.find_elements_by_css_selector("#bullionPriceTable > div > table > tbody > tr > td > span")[3].text
+    gp1 = gp.replace('$','')
+    gp2 = float(gp1.replace(',',''))
+    return(gp2)
+
+def Cacluate(bit_quantity, bit_price, gold_price):
     # gold_quantity = int(input("금 kg양은?: "))
     gold_quantity = 201296000
-    gold_price = float(input("금 1kg당 달러: ")) 
     # replace_ratio = int(input("비트코인이 금 자산 몇퍼센트가 될까?: "))/100 10%가정
     replace_ratio = 0.1
 
@@ -41,5 +53,6 @@ if __name__ == "__main__":
     bit_info = GetBitInfo()
     bit_quantity = bit_info[0]
     bit_price = bit_info[1]
-    Cacluate(bit_quantity, bit_price)
+    gold_price = GetGoldPrice()
+    Cacluate(bit_quantity, bit_price, gold_price)
 
